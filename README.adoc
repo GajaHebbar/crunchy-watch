@@ -125,6 +125,11 @@ below.
 	| CRUNCHY_DEBUG
 	|
 	| when set to true, causes debug level messages to be output
+| -- ssl
+        | CRUNCHY_SSL_MODE
+        |
+        | when set to 'require' connection will be established via ssl 
+        | when set to 'disable' connection does not use ssl
 |===
 
 ==== Kubernetes
@@ -469,3 +474,11 @@ The examples on Openshift require the pg-watcher Service Account to
 have special priviledges, see the run.sh script for the 'oc adm' commands
 required to grant those priviledges.  Customize this priviledge for your
 local requirements.  
+
+
+== Enhanancement
+
+	1. User can provide input to selecet ssl mode via environment variable
+ 	2. watcher will start even if postgres pods have multiple container, provided postgres container should be the first container
+
+

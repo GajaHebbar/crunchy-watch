@@ -1,5 +1,5 @@
 /*
-* Copyright 2016-2018 Crunchy Data Solutions, Inc.
+* copyright 2016-2018 Crunchy Data Solutions, Inc.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -147,6 +147,13 @@ var (
 		EnvVar:      "CRUNCHY_DEBUG",
 		Description: "when set to true, debug output is enabled",
 	}
+
+	SslMode = flags.FlagInfo{
+		Namespace:   "general",
+		Name:        "ssl",
+		EnvVar:      "CRUNCHY_SSL_MODE",
+		Description: "when set to true, ssl is enabled",
+	}
 )
 
 const (
@@ -184,6 +191,7 @@ func init() {
 	flags.String(flagSet, PreHook, "")
 	flags.String(flagSet, PostHook, "")
 	flags.Bool(flagSet, Debug, false)
+	flags.String(flagSet, SslMode, "")
 }
 
 func main() {
@@ -265,15 +273,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	timeout := config.GetDuration(Timeout.EnvVar)
+	if config.GetString(Replica.EnvVar) == "" {
+		log.Error("Must specify ssl mode")
+		log.Errorf("This value can be provided by either the '--%s' flag or the '%s' environment variable",
+			SslMode.Name, SslMode.EnvVar)
+		os.Exit(1)
+	}
 
-	// Construct connection string to primary
-	target := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable&connect_timeout=%d",
+	timeout := config.GetDuration(Timeout.EnvVar)
+        
+        log.Debugf("SSL MODE : %s ", config.GetString(SslMode.EnvVar))
+	
+        // Construct connection string to primary
+	target := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s&connect_timeout=%d",
 		config.GetString(Username.EnvVar),
 		config.GetString(Password.EnvVar),
 		config.GetString(Primary.EnvVar),
 		config.GetInt(PrimaryPort.EnvVar),
 		config.GetString(Database.EnvVar),
+		config.GetString(SslMode.EnvVar),
 		int(timeout.Seconds()),
 	)
 

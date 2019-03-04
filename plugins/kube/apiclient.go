@@ -49,8 +49,12 @@ func promoteReplica(namespace string, name string) error {
 		return fmt.Errorf("could not get pod info: %v", err)
 	}
 
-	if len(pod.Spec.Containers) != 1 {
+	/*if len(pod.Spec.Containers) != 1 {
 		return fmt.Errorf("could not determine which container to use")
+	}*/
+
+	for i := 0; i < len(pod.Spec.Containers); i++ {
+		log.Debugf("Pod %s contains %s container ",pod.Name, pod.Spec.Containers[i].Name)
 	}
 
 	var stderr string
@@ -233,6 +237,10 @@ func getPods(namespace string, name *string, selectors map[string]string) (*apiv
 	var options string
 	var i = 0
 	var l = len(selectors)
+	
+	for key, value := range selectors {
+        	log.Info("Label : ", key, " Value : ", value)
+        }
 
 	for option, value := range selectors {
 		b.WriteString(option)
@@ -245,6 +253,8 @@ func getPods(namespace string, name *string, selectors map[string]string) (*apiv
 
 	}
 	options = b.String()
+
+        log.Info("selected Pods: ", options)
 
 	podsClient := client.CoreV1().Pods(namespace)
 	return podsClient.List(metav1.ListOptions{

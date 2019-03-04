@@ -138,12 +138,13 @@ func latestStrategy() (string, error) {
 	for _, p := range podList.Items {
 
 		target := fmt.Sprintf(
-			"postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+			"postgresql://%s:%s@%s:%s/%s?sslmode=%s",
 			config.GetString("CRUNCHY_WATCH_USERNAME"),
 			config.GetString("CRUNCHY_WATCH_PASSWORD"),
 			p.Status.PodIP,
 			config.GetString("CRUNCHY_WATCH_REPLICA_PORT"),
 			config.GetString("CRUNCHY_WATCH_DATABASE"),
+			config.GetString("CRUNCHY_SSL_MODE"),
 		)
 
 		replicaInfo, err = util.GetReplicationInfo(target)
