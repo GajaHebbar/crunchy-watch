@@ -59,7 +59,7 @@ func promoteReplica(namespace string, name string) error {
 
 	var stderr string
 
-	cmd := []string{fmt.Sprintf("/opt/cpm/bin/promote.sh")}
+	cmd := []string{fmt.Sprintf("/opt/Avaya/bin/promote.sh")}
 
 	log.Debugf("executing cmd: %s on pod %s in namespace %s container: %s", cmd, pod.Name, pod.Namespace, pod.Spec.Containers[0].Name)
 
